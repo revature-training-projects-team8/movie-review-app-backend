@@ -59,4 +59,3 @@ public class Movie {
     private Double averageRating;
 }
  
-//comments
