@@ -1,7 +1,8 @@
-package com.moviereview.controller;
+package com.moviereview.movie.controller;
 
-import com.moviereview.model.Movie;
-import com.moviereview.service.MovieService;
+import com.moviereview.movie.model.Movie;
+import com.moviereview.movie.service.MovieService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;

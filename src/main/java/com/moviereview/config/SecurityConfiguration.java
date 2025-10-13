@@ -1,4 +1,4 @@
-package com.moviereview.configuration;
+package com.moviereview.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

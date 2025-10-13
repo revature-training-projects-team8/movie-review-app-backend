@@ -1,4 +1,4 @@
-package com.moviereview.userlogin.service;
+package com.moviereview.user.service;
 
 import java.util.List;
 
@@ -10,18 +10,16 @@ import com.moviereview.exception.DuplicateUserNameException;
 import com.moviereview.exception.EmailOrPasswordException;
 import com.moviereview.exception.GlobalExceptionHandler;
 import com.moviereview.exception.UserNotFoundException;
-import com.moviereview.userlogin.model.User;
-import com.moviereview.userlogin.repository.UserRepository;
+import com.moviereview.user.model.User;
+import com.moviereview.user.repository.UserRepository;
 
 @Service
 public class UserService {
-
-    private final GlobalExceptionHandler globalException;
+    
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository, GlobalExceptionHandler globalException) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.globalException = globalException;
     }
 
     // Get all users

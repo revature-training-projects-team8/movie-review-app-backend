@@ -1,9 +1,9 @@
-package com.moviereview.userlogin.controller;
+package com.moviereview.user.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moviereview.userlogin.model.User;
-import com.moviereview.userlogin.service.UserService;
+import com.moviereview.user.model.User;
+import com.moviereview.user.service.UserService;
 
 import jakarta.validation.Valid;
 

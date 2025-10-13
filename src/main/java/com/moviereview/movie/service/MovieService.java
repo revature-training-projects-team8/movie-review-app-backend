@@ -1,7 +1,8 @@
-package com.moviereview.service;
+package com.moviereview.movie.service;
 
-import com.moviereview.model.Movie;
-import com.moviereview.repository.MovieRepository;
+import com.moviereview.movie.model.Movie;
+import com.moviereview.movie.repository.MovieRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;

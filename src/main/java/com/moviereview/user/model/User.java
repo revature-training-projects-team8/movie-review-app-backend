@@ -1,4 +1,4 @@
-package com.moviereview.userlogin.model;
+package com.moviereview.user.model;
 
 import org.hibernate.validator.constraints.EAN;
 
