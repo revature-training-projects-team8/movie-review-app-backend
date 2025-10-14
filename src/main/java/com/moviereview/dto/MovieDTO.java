@@ -14,6 +14,7 @@ public class MovieDTO {
     private String director;
     private String genre;
     private String posterUrl;
+    private Integer duration; // Duration in minutes
     private double averageRating; // Calculated field
 
     // Getters and Setters
@@ -71,6 +72,14 @@ public class MovieDTO {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public double getAverageRating() {

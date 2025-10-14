@@ -1,6 +1,7 @@
 package com.moviereview.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviereview.config.TestSecurityConfig;
 import com.moviereview.dto.MovieDTO;
 
 import com.moviereview.model.Movie;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(MovieController.class)
+@Import(TestSecurityConfig.class)
 @DisplayName("Movie Controller Tests")
 class MovieControllerTest {
 
