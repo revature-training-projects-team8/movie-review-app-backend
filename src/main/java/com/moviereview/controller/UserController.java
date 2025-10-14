@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
         try {
-            User savedUser = userService.createUser(user.getUsername(), user.getPassword());
+            User savedUser = userService.createUser(user.getUsername(), user.getPassword(), user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (RuntimeException e) {
             throw new DuplicateResourceException(e.getMessage());

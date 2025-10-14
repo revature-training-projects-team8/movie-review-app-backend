@@ -1,6 +1,7 @@
 package com.moviereview.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviereview.config.TestSecurityConfig;
 import com.moviereview.model.User;
 import com.moviereview.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
+@Import(TestSecurityConfig.class)
 @DisplayName("User Controller Tests")
 class UserControllerTest {
 
@@ -43,6 +46,7 @@ class UserControllerTest {
         testUser.setId(1L);
         testUser.setUsername("testuser");
         testUser.setPassword("password123");
+        testUser.setEmail("test@example.com");
     }
 
     @Test
@@ -52,13 +56,15 @@ class UserControllerTest {
         User newUser = new User();
         newUser.setUsername("newuser");
         newUser.setPassword("password123");
+        newUser.setEmail("newuser@example.com");
 
         User savedUser = new User();
         savedUser.setId(2L);
         savedUser.setUsername("newuser");
         savedUser.setPassword("password123");
+        savedUser.setEmail("newuser@example.com");
 
-        when(userService.createUser("newuser", "password123")).thenReturn(savedUser);
+        when(userService.createUser("newuser", "password123", "newuser@example.com")).thenReturn(savedUser);
 
         // When & Then
         mockMvc.perform(post("/api/users/register")
@@ -68,7 +74,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.username").value("newuser"));
 
-        verify(userService).createUser("newuser", "password123");
+        verify(userService).createUser("newuser", "password123", "newuser@example.com");
     }
 
     @Test
@@ -78,8 +84,9 @@ class UserControllerTest {
         User duplicateUser = new User();
         duplicateUser.setUsername("existinguser");
         duplicateUser.setPassword("password123");
+        duplicateUser.setEmail("existing@example.com");
 
-        when(userService.createUser("existinguser", "password123"))
+        when(userService.createUser("existinguser", "password123", "existing@example.com"))
                 .thenThrow(new RuntimeException("Username already exists."));
 
         // When & Then
@@ -88,7 +95,7 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsString(duplicateUser)))
                 .andExpect(status().isConflict());
 
-        verify(userService).createUser("existinguser", "password123");
+        verify(userService).createUser("existinguser", "password123", "existing@example.com");
     }
 
     @Test
@@ -98,6 +105,7 @@ class UserControllerTest {
         User invalidUser = new User();
         invalidUser.setUsername("ab"); // Too short
         invalidUser.setPassword("password123");
+        invalidUser.setEmail("test@example.com");
 
         // When & Then
         mockMvc.perform(post("/api/users/register")
@@ -105,7 +113,7 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsString(invalidUser)))
                 .andExpect(status().isBadRequest());
 
-        verify(userService, never()).createUser(anyString(), anyString());
+        verify(userService, never()).createUser(anyString(), anyString(), anyString());
     }
 
     @Test

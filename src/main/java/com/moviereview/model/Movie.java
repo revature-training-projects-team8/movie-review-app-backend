@@ -23,7 +23,13 @@ public class Movie {
     private String director;
     @Size(max = 100, message = "Genre must be less than 100 characters")
     private String genre;
+
     private String posterUrl; // URL to the movie poster
+
+    private Integer duration; // Movie duration in minutes
+
+    @Column(columnDefinition = "DECIMAL(3,2) DEFAULT 0.0")
+    private Double avgRating = 0.0; // Average rating
 
     // One-to-many relationship with reviews
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -92,5 +98,21 @@ public class Movie {
 
     public void setReviews(Set<Review> reviews) {
         this.reviews = reviews;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public Double getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(Double avgRating) {
+        this.avgRating = avgRating;
     }
 }
