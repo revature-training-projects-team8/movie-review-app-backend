@@ -1,3 +1,4 @@
+
 package com.moviereview.controller;
 
 import com.moviereview.model.Movie;
@@ -41,5 +42,12 @@ public class MovieController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         movieService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Movie> update(@PathVariable Long id, @Valid @RequestBody Movie movie) {
+        return movieService.update(id, movie)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

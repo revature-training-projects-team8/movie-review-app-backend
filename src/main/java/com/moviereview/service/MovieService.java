@@ -31,4 +31,12 @@ public class MovieService {
     public void deleteById(Long id) {
         movieRepository.deleteById(id);
     }
+
+    public Optional<Movie> update(Long id, Movie movie) {
+        return movieRepository.findById(id)
+            .map(existingMovie -> {
+                movie.setId(id);
+                return movieRepository.save(movie);
+            });
+    }
 }
