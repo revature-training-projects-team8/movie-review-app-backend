@@ -4,7 +4,6 @@ import com.moviereview.exception.DuplicateResourceException;
 import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.User;
 import com.moviereview.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,11 @@ import java.util.Map;
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // Create a new user (simplified registration)
     @PostMapping("/register")

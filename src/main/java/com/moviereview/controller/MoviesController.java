@@ -3,7 +3,6 @@ package com.moviereview.controller;
 import com.moviereview.dto.MovieDTO;
 import com.moviereview.model.Movie;
 import com.moviereview.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,11 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
 public class MoviesController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
+
+    public MoviesController(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     /**
      * Get all movies
