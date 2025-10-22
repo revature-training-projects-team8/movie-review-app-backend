@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
 @RequiredArgsConstructor
 public class ReviewController {
 

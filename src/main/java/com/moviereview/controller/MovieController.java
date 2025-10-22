@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/movies")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
 @RequiredArgsConstructor
 public class MovieController {
 
@@ -64,6 +64,7 @@ public class MovieController {
         existingMovie.setDirector(movieDto.getDirector());
         existingMovie.setGenre(movieDto.getGenre());
         existingMovie.setPosterUrl(movieDto.getPosterUrl());
+        existingMovie.setDuration(movieDto.getDuration());
 
         Movie updatedMovie = movieService.saveMovie(existingMovie);
         return ResponseEntity.ok(convertToDtoWithAverageRating(updatedMovie));
@@ -89,6 +90,7 @@ public class MovieController {
         dto.setDirector(movie.getDirector());
         dto.setGenre(movie.getGenre());
         dto.setPosterUrl(movie.getPosterUrl());
+        dto.setDuration(movie.getDuration());
         dto.setAverageRating(movieService.getAverageRatingForMovie(movie.getId()));
         return dto;
     }
@@ -102,6 +104,7 @@ public class MovieController {
         movie.setDirector(dto.getDirector());
         movie.setGenre(dto.getGenre());
         movie.setPosterUrl(dto.getPosterUrl());
+        movie.setDuration(dto.getDuration());
         return movie;
     }
 }
