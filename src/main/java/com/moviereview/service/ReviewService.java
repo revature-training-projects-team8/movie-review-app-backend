@@ -9,7 +9,6 @@ import com.moviereview.model.User;
 import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import com.moviereview.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +16,15 @@ import java.util.List;
 @Service
 public class ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
-    @Autowired
-    private MovieRepository movieRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
+    private final MovieRepository movieRepository;
+    private final UserRepository userRepository;
+
+    public ReviewService(ReviewRepository reviewRepository, MovieRepository movieRepository, UserRepository userRepository) {
+        this.reviewRepository = reviewRepository;
+        this.movieRepository = movieRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<Review> getReviewsForMovie(Long movieId) {
         return movieRepository.findById(movieId)

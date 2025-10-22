@@ -4,7 +4,6 @@ import com.moviereview.dto.MovieDTO;
 import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.Movie;
 import com.moviereview.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,11 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
+
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     // Browse all movies
     @GetMapping
