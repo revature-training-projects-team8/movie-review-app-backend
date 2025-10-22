@@ -1,61 +1,46 @@
 package com.moviereview.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "movies")
+import java.time.LocalDate;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Entity
+@Table(name = "movies")
 public class Movie {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotBlank(message = "title must not be blank")
-    @Size(max = 255, message = "title must not exceed 255 characters")
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
+    @NotBlank(message = "Title is required")
+    @Size(max = 255, message = "Title must be less than 255 characters")
     private String title;
-
-    @Size(max = 2000, message = "description must not exceed 2000 characters")
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
+    @Size(max = 5000, message = "Description must be less than 5000 characters")
     private String description;
-
-    @Min(value = 1888, message = "releaseYear must be >= 1888")
-    @Max(value = 2100, message = "releaseYear must be <= 2100")
-    private Integer releaseYear;
-
-    @NotBlank(message = "genre must not be blank")
-    @Size(max = 100, message = "genre must not exceed 100 characters")
-    @Column(length = 100)
+    private LocalDate releaseDate;
+    @Size(max = 255, message = "Director name must be less than 255 characters")
+    private String director;
+    @Size(max = 100, message = "Genre must be less than 100 characters")
     private String genre;
 
-    @NotBlank(message = "director must not be blank")
-    @Size(max = 255, message = "director must not exceed 255 characters")
-    @Column(length = 255)
-    private String director;
+    private String posterUrl; // URL to the movie poster
 
-    // Basic URL validation (allows http/https). For stricter validation install hibernate-validator and use @URL
-    @Size(max = 2048, message = "posterUrl must not exceed 2048 characters")
-    @Pattern(regexp = "^(https?://).+", message = "posterUrl must be a valid http(s) URL")
-    @Column(length = 2048)
-    private String posterUrl;
+    private Integer duration; // Movie duration in minutes
 
-    @DecimalMin(value = "0.0", inclusive = true, message = "averageRating must be >= 0.0")
-    @DecimalMax(value = "10.0", inclusive = true, message = "averageRating must be <= 10.0")
-    private Double averageRating;
+    @Column(columnDefinition = "DECIMAL(3,2) DEFAULT 0.0")
+    private Double avgRating = 0.0; // Average rating
+
+    // One-to-many relationship with reviews
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews;
+
+  
 }
- 
