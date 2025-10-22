@@ -1,5 +1,6 @@
 package com.moviereview.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -19,9 +20,11 @@ public class Review {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
+    @JsonIgnoreProperties({"reviews"})
     private Movie movie;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"reviews"})
     private User user;
     @Column(nullable = false)
     @NotNull(message = "Rating is required")

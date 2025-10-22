@@ -1,5 +1,6 @@
 package com.moviereview.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,7 @@ public class User {
 
     // One-to-many relationship with reviews
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Review> reviews;
 
     @PrePersist
