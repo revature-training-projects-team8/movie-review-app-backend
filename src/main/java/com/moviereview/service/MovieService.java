@@ -3,20 +3,17 @@ package com.moviereview.service;
 import com.moviereview.model.Movie;
 import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MovieService {
 
     private final MovieRepository movieRepository;
     private final ReviewRepository reviewRepository; // To calculate average rating
-
-    public MovieService(MovieRepository movieRepository, ReviewRepository reviewRepository) {
-        this.movieRepository = movieRepository;
-        this.reviewRepository = reviewRepository;
-    }
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();

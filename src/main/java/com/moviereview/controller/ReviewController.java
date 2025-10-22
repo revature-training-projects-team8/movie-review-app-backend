@@ -3,6 +3,7 @@ package com.moviereview.controller;
 import com.moviereview.dto.ReviewDTO;
 import com.moviereview.model.Review;
 import com.moviereview.service.ReviewService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/reviews")
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
+@RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewService reviewService;
-
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
 
     // Get reviews for a specific movie
     @GetMapping("/movie/{movieId}")

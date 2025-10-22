@@ -9,22 +9,18 @@ import com.moviereview.model.User;
 import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import com.moviereview.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
-
-    public ReviewService(ReviewRepository reviewRepository, MovieRepository movieRepository, UserRepository userRepository) {
-        this.reviewRepository = reviewRepository;
-        this.movieRepository = movieRepository;
-        this.userRepository = userRepository;
-    }
 
     public List<Review> getReviewsForMovie(Long movieId) {
         return movieRepository.findById(movieId)

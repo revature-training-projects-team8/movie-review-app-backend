@@ -3,6 +3,7 @@ package com.moviereview.controller;
 import com.moviereview.dto.MovieDTO;
 import com.moviereview.model.Movie;
 import com.moviereview.service.MovieService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +20,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/movies")
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
+@RequiredArgsConstructor
 public class MoviesController {
 
     private final MovieService movieService;
-
-    public MoviesController(MovieService movieService) {
-        this.movieService = movieService;
-    }
 
     /**
      * Get all movies

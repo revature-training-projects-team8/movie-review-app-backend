@@ -6,8 +6,8 @@ import com.moviereview.dto.UserRegistrationRequest;
 import com.moviereview.model.User;
 import com.moviereview.service.UserService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,15 +21,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "http://localhost:3001", allowCredentials = "true")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
     private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
 
     /**
      * User login endpoint
@@ -37,21 +33,21 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        logger.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
+    log.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
 
         Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
 
         if (userOptional.isEmpty()) {
-            logger.warn("❌ User not found: {}", loginRequest.getUsername());
+            log.warn("❌ User not found: {}", loginRequest.getUsername());
             return ResponseEntity.status(401).body(null);
         }
 
         User user = userOptional.get();
-        logger.info("✅ User found: {} (email: {})", user.getUsername(), user.getEmail());
+    log.info("✅ User found: {} (email: {})", user.getUsername(), user.getEmail());
 
         // Validate password using BCrypt
         boolean passwordValid = userService.validatePassword(user, loginRequest.getPassword());
-        logger.info("🔑 Password validation result: {}", passwordValid);
+    log.info("🔑 Password validation result: {}", passwordValid);
 
         if (passwordValid) {
             LoginResponse response = new LoginResponse(
@@ -59,11 +55,11 @@ public class AuthController {
                     user.getUsername(),
                     user.getEmail(),
                     user.getRole());
-            logger.info("✅ Login successful for user: {}", user.getUsername());
+            log.info("✅ Login successful for user: {}", user.getUsername());
             return ResponseEntity.ok(response);
         }
 
-        logger.warn("❌ Invalid password for user: {}", loginRequest.getUsername());
+    log.warn("❌ Invalid password for user: {}", loginRequest.getUsername());
         return ResponseEntity.status(401).body(null);
     }
 
@@ -88,7 +84,7 @@ public class AuthController {
     @GetMapping("/test/hash")
     public ResponseEntity<String> generateHash(@RequestParam String password) {
         String hash = userService.generateHash(password);
-        logger.info("🔐 Generated BCrypt hash for testing");
+        log.info("🔐 Generated BCrypt hash for testing");
         return ResponseEntity.ok("BCrypt hash: " + hash);
     }
 
@@ -117,7 +113,7 @@ public class AuthController {
                 matches ? "✅ YES" : "❌ NO",
                 matches ? "Login should work!" : "This is why login fails - hash mismatch!");
 
-        logger.info("🧪 Password verification test: {}", matches);
+        log.info("🧪 Password verification test: {}", matches);
         return ResponseEntity.ok(result);
     }
 }

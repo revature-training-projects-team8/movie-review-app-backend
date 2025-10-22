@@ -4,6 +4,7 @@ import com.moviereview.exception.DuplicateResourceException;
 import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.User;
 import com.moviereview.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     // Create a new user (simplified registration)
     @PostMapping("/register")
