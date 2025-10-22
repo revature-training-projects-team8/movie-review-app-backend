@@ -3,24 +3,19 @@ package com.moviereview.service;
 import com.moviereview.exception.DuplicateResourceException;
 import com.moviereview.model.User;
 import com.moviereview.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class UserService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public User createUser(String username, String password, String email) {
         if (userRepository.existsByUsername(username)) {
@@ -43,13 +38,13 @@ public class UserService {
     }
 
     public boolean validatePassword(User user, String rawPassword) {
-        logger.debug("🔍 Validating password for user: {}", user.getUsername());
-        logger.debug("📝 Stored hash starts with: {}", user.getPassword().substring(0, 10));
-        logger.debug("📝 Raw password length: {}", rawPassword.length());
+    log.debug("🔍 Validating password for user: {}", user.getUsername());
+    log.debug("📝 Stored hash starts with: {}", user.getPassword().substring(0, 10));
+    log.debug("📝 Raw password length: {}", rawPassword.length());
 
         boolean matches = passwordEncoder.matches(rawPassword, user.getPassword());
 
-        logger.debug("✅ Password match result: {}", matches);
+        log.debug("✅ Password match result: {}", matches);
         return matches;
     }
 
