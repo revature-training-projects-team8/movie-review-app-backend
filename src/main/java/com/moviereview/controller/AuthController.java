@@ -4,76 +4,115 @@ import com.moviereview.dto.LoginRequest;
 import com.moviereview.dto.LoginResponse;
 import com.moviereview.dto.UserRegistrationRequest;
 import com.moviereview.model.User;
+import com.moviereview.security.JwtUtil;
 import com.moviereview.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 /**
- * Authentication Controller
+ * Authentication Controller with JWT
  * Handles authentication endpoints at /auth/**
- * Provides login and registration functionality
+ * Provides login and registration functionality with JWT token generation
  */
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3001", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}, allowCredentials = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     /**
-     * User login endpoint
+     * User login endpoint with JWT
      * POST /auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-    log.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        log.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
 
-        Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
+        try {
+            // Authenticate user using Spring Security
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        if (userOptional.isEmpty()) {
-            log.warn("❌ User not found: {}", loginRequest.getUsername());
-            return ResponseEntity.status(401).body(null);
-        }
+            // Fetch user details
+            Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
+            if (userOptional.isEmpty()) {
+                log.warn("❌ User not found after authentication: {}", loginRequest.getUsername());
+                return ResponseEntity.status(401).body("Authentication failed");
+            }
 
-        User user = userOptional.get();
-    log.info("✅ User found: {} (email: {})", user.getUsername(), user.getEmail());
+            User user = userOptional.get();
+            log.info("✅ User authenticated: {} (email: {})", user.getUsername(), user.getEmail());
 
-        // Validate password using BCrypt
-        boolean passwordValid = userService.validatePassword(user, loginRequest.getPassword());
-    log.info("🔑 Password validation result: {}", passwordValid);
+            // Generate JWT token
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+            log.info("🎟️ JWT token generated for user: {}", user.getUsername());
 
-        if (passwordValid) {
+            // Create response with JWT token
             LoginResponse response = new LoginResponse(
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
-                    user.getRole());
+                    user.getRole(),
+                    token);
+
             log.info("✅ Login successful for user: {}", user.getUsername());
             return ResponseEntity.ok(response);
-        }
 
-    log.warn("❌ Invalid password for user: {}", loginRequest.getUsername());
-        return ResponseEntity.status(401).body(null);
+        } catch (AuthenticationException e) {
+            log.warn("❌ Authentication failed for user: {} - {}", loginRequest.getUsername(), e.getMessage());
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
     }
 
     /**
-     * User registration endpoint
+     * User registration endpoint with JWT
      * POST /auth/register
      */
     @PostMapping("/register")
-    public ResponseEntity<User> register(@Valid @RequestBody UserRegistrationRequest request) {
-        User newUser = userService.createUser(
-                request.getUsername(),
-                request.getPassword(),
-                request.getEmail());
-        return ResponseEntity.ok(newUser);
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationRequest request) {
+        try {
+            User newUser = userService.createUser(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getEmail());
+
+            // Generate JWT token for the new user
+            String token = jwtUtil.generateToken(newUser.getUsername(), newUser.getRole());
+            log.info("🎟️ JWT token generated for new user: {}", newUser.getUsername());
+
+            // Create response with JWT token
+            LoginResponse response = new LoginResponse(
+                    newUser.getId(),
+                    newUser.getUsername(),
+                    newUser.getEmail(),
+                    newUser.getRole(),
+                    token);
+
+            log.info("✅ Registration successful for user: {}", newUser.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("❌ Registration failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     /**
