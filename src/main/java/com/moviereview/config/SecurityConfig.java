@@ -42,9 +42,7 @@ public class SecurityConfig {
                                 "/api/users/login", // User login endpoint
                                 "/api/users/register", // User registration endpoint
                                 "/api/movies/**", // Movie listing (public viewing)
-                                "/movies/**", // Movie endpoints (without /api prefix)
                                 "/api/reviews/**", // Review endpoints
-                                "/reviews/**", // Review endpoints (without /api prefix)
                                 "/error", // Error page
                                 "/actuator/health" // Health check endpoint
                         ).permitAll()
