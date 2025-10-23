@@ -4,118 +4,115 @@ import com.moviereview.dto.LoginRequest;
 import com.moviereview.dto.LoginResponse;
 import com.moviereview.dto.UserRegistrationRequest;
 import com.moviereview.model.User;
+import com.moviereview.security.JwtUtil;
 import com.moviereview.service.UserService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 /**
- * Authentication Controller
+ * Authentication Controller with JWT
  * Handles authentication endpoints at /auth/**
- * Provides login and registration functionality
+ * Provides login and registration functionality with JWT token generation
  */
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3001", allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}, allowCredentials = "true")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     /**
-     * User login endpoint
+     * User login endpoint with JWT
      * POST /auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        logger.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        log.info("🔐 Login attempt for username: {}", loginRequest.getUsername());
 
-        Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
+        try {
+            // Authenticate user using Spring Security
+        authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
 
-        if (userOptional.isEmpty()) {
-            logger.warn("❌ User not found: {}", loginRequest.getUsername());
-            return ResponseEntity.status(401).body(null);
-        }
+            // Fetch user details
+            Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
+            if (userOptional.isEmpty()) {
+                log.warn("❌ User not found after authentication: {}", loginRequest.getUsername());
+                return ResponseEntity.status(401).body("Authentication failed");
+            }
 
-        User user = userOptional.get();
-        logger.info("✅ User found: {} (email: {})", user.getUsername(), user.getEmail());
+            User user = userOptional.get();
+            log.info("✅ User authenticated: {} (email: {})", user.getUsername(), user.getEmail());
 
-        // Validate password using BCrypt
-        boolean passwordValid = userService.validatePassword(user, loginRequest.getPassword());
-        logger.info("🔑 Password validation result: {}", passwordValid);
+            // Generate JWT token
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+            log.info("🎟️ JWT token generated for user: {}", user.getUsername());
 
-        if (passwordValid) {
+            // Create response with JWT token
             LoginResponse response = new LoginResponse(
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),
-                    user.getRole());
-            logger.info("✅ Login successful for user: {}", user.getUsername());
-            return ResponseEntity.ok(response);
-        }
+                    user.getRole(),
+                    token);
 
-        logger.warn("❌ Invalid password for user: {}", loginRequest.getUsername());
-        return ResponseEntity.status(401).body(null);
+            log.info("✅ Login successful for user: {}", user.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (AuthenticationException e) {
+            log.warn("❌ Authentication failed for user: {} - {}", loginRequest.getUsername(), e.getMessage());
+            return ResponseEntity.status(401).body("Invalid username or password");
+        }
     }
 
     /**
-     * User registration endpoint
+     * User registration endpoint with JWT
      * POST /auth/register
      */
     @PostMapping("/register")
-    public ResponseEntity<User> register(@Valid @RequestBody UserRegistrationRequest request) {
-        User newUser = userService.createUser(
-                request.getUsername(),
-                request.getPassword(),
-                request.getEmail());
-        return ResponseEntity.ok(newUser);
-    }
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationRequest request) {
+        try {
+            User newUser = userService.createUser(
+                    request.getUsername(),
+                    request.getPassword(),
+                    request.getEmail(),
+                    request.getRole());
 
-    /**
-     * TEST ENDPOINT - Generate BCrypt hash for a password
-     * GET /auth/test/hash?password=yourpassword
-     * This will help you generate the correct hash for your database
-     */
-    @GetMapping("/test/hash")
-    public ResponseEntity<String> generateHash(@RequestParam String password) {
-        String hash = userService.generateHash(password);
-        logger.info("🔐 Generated BCrypt hash for testing");
-        return ResponseEntity.ok("BCrypt hash: " + hash);
-    }
+            // Generate JWT token for the new user
+            String token = jwtUtil.generateToken(newUser.getUsername(), newUser.getRole());
+            log.info("🎟️ JWT token generated for new user: {}", newUser.getUsername());
 
-    /**
-     * TEST ENDPOINT - Test if a password matches the admin's stored hash
-     * GET /auth/test/verify?password=admin123
-     */
-    @GetMapping("/test/verify")
-    public ResponseEntity<String> testAdminPassword(@RequestParam String password) {
-        Optional<User> adminUser = userService.findByUsername("admin");
+            // Create response with JWT token
+            LoginResponse response = new LoginResponse(
+                    newUser.getId(),
+                    newUser.getUsername(),
+                    newUser.getEmail(),
+                    newUser.getRole(),
+                    token);
 
-        if (adminUser.isEmpty()) {
-            return ResponseEntity.ok("❌ Admin user not found in database");
+            log.info("✅ Registration successful for user: {}", newUser.getUsername());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("❌ Registration failed: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        User user = adminUser.get();
-        boolean matches = userService.validatePassword(user, password);
-
-        String result = String.format(
-                "Testing password: '%s'\n" +
-                        "Stored hash: %s\n" +
-                        "Password matches: %s\n\n" +
-                        "%s",
-                password,
-                user.getPassword(),
-                matches ? "✅ YES" : "❌ NO",
-                matches ? "Login should work!" : "This is why login fails - hash mismatch!");
-
-        logger.info("🧪 Password verification test: {}", matches);
-        return ResponseEntity.ok(result);
     }
+
 }

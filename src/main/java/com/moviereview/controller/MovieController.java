@@ -4,7 +4,7 @@ import com.moviereview.dto.MovieDTO;
 import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.Movie;
 import com.moviereview.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/movies")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" })
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
+@RequiredArgsConstructor
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
 
     // Browse all movies
     @GetMapping
@@ -64,6 +64,7 @@ public class MovieController {
         existingMovie.setDirector(movieDto.getDirector());
         existingMovie.setGenre(movieDto.getGenre());
         existingMovie.setPosterUrl(movieDto.getPosterUrl());
+        existingMovie.setDuration(movieDto.getDuration());
 
         Movie updatedMovie = movieService.saveMovie(existingMovie);
         return ResponseEntity.ok(convertToDtoWithAverageRating(updatedMovie));
@@ -89,6 +90,7 @@ public class MovieController {
         dto.setDirector(movie.getDirector());
         dto.setGenre(movie.getGenre());
         dto.setPosterUrl(movie.getPosterUrl());
+        dto.setDuration(movie.getDuration());
         dto.setAverageRating(movieService.getAverageRatingForMovie(movie.getId()));
         return dto;
     }
@@ -102,6 +104,7 @@ public class MovieController {
         movie.setDirector(dto.getDirector());
         movie.setGenre(dto.getGenre());
         movie.setPosterUrl(dto.getPosterUrl());
+        movie.setDuration(dto.getDuration());
         return movie;
     }
 }
