@@ -1,29 +1,38 @@
 package com.moviereview.config;
 
+import com.moviereview.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
- * Security Configuration for Movie Review Application
- * Configures Spring Security with CORS support and BCrypt password encoding
+ * Security Configuration for Movie Review Application with JWT
+ * Configures Spring Security with JWT authentication, CORS support, and BCrypt password encoding
  * Only active in non-test profiles
  */
 @Configuration
 @EnableWebSecurity
 @Profile("!test")
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,29 +40,57 @@ public class SecurityConfig {
                 // Enable CORS with custom configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // Disable CSRF for REST API (enable in production with proper token handling)
+                // Disable CSRF for REST API (JWT doesn't need CSRF protection)
                 .csrf(csrf -> csrf.disable())
+
+                // Set session management to stateless (JWT-based authentication)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no authentication required
                         .requestMatchers(
-                                "/api/auth/**", // Auth endpoints (with /api prefix)
-                                "/auth/**", // Auth endpoints (without /api prefix)
-                                "/api/users/login", // User login endpoint
-                                "/api/users/register", // User registration endpoint
-                                "/api/movies/**", // Movie listing (public viewing)
-                                "/movies/**", // Movie endpoints (without /api prefix)
-                                "/api/reviews/**", // Review endpoints
-                                "/reviews/**", // Review endpoints (without /api prefix)
+                                "/auth/**", // Auth endpoints
                                 "/error", // Error page
                                 "/actuator/health" // Health check endpoint
                         ).permitAll()
+                        
+                        // Public read-only movie endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                        
+                        // Admin-only movie management operations
+                        .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
+                        
+                        // Public read-only review endpoints (movie reviews only)
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/movie/**").permitAll()
+                        
+                        // Protected personal review endpoints - require authentication
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/my-reviews").authenticated()
+                        
+                        // Protected review write operations - require authentication
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").authenticated()
 
                         // All other requests require authentication
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+
+                // Add JWT authentication filter before UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * Authentication Manager Bean
+     * Required for authenticating users during login
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     /**

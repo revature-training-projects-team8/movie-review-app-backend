@@ -1,123 +1,95 @@
 package com.moviereview.service;
 
+import com.moviereview.config.TestSecurityConfig;
+import com.moviereview.exception.DuplicateResourceException;
+import com.moviereview.model.User;
+import com.moviereview.repository.UserRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+@Import(TestSecurityConfig.class)
 public class UserServiceTest {
 
-    @org.junit.jupiter.api.Test
-    public void getAllUsers_returnsList() {
-        com.moviereview.userlogin.repository.UserRepository userRepository =
-            org.mockito.Mockito.mock(com.moviereview.userlogin.repository.UserRepository.class);
-        com.moviereview.exception.GlobalExceptionHandler globalException = null;
+    @Autowired
+    private UserService userService;
 
-        com.moviereview.userlogin.model.User u1 = new com.moviereview.userlogin.model.User();
-        u1.setEmail("a@example.com");
-        u1.setPassword("pass1");
+    @MockitoBean
+    private UserRepository userRepository;
 
-        com.moviereview.userlogin.model.User u2 = new com.moviereview.userlogin.model.User();
-        u2.setEmail("b@example.com");
-        u2.setPassword("pass2");
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        java.util.List<com.moviereview.userlogin.model.User> mockedList =
-            java.util.Arrays.asList(u1, u2);
+    @Test
+    void testCreateUser() {
+        // Given
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setUsername("testuser");
+        savedUser.setEmail("test@example.com");
+        savedUser.setRole("USER");
+        
+        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-        org.mockito.Mockito.when(userRepository.findAll()).thenReturn(mockedList);
+        // When
+        User result = userService.createUser("testuser", "password123", "test@example.com");
 
-        com.moviereview.userlogin.service.UserService service =
-            new com.moviereview.userlogin.service.UserService(userRepository, globalException);
-
-        java.util.List<com.moviereview.userlogin.model.User> result = service.getAllUsers();
-
-        org.junit.jupiter.api.Assertions.assertNotNull(result);
-        org.junit.jupiter.api.Assertions.assertEquals(2, result.size());
-        org.junit.jupiter.api.Assertions.assertEquals("a@example.com", result.get(0).getEmail());
-        org.junit.jupiter.api.Assertions.assertEquals("b@example.com", result.get(1).getEmail());
+        // Then
+        assertNotNull(result);
+        assertEquals("testuser", result.getUsername());
+        assertEquals("test@example.com", result.getEmail());
+        assertEquals("USER", result.getRole());
     }
 
-    @org.junit.jupiter.api.Test
-    public void createUser_throwsDuplicateEmail_whenGlobalExceptionNotNull() {
-        com.moviereview.userlogin.repository.UserRepository userRepository =
-            org.mockito.Mockito.mock(com.moviereview.userlogin.repository.UserRepository.class);
-        com.moviereview.exception.GlobalExceptionHandler globalException =
-            org.mockito.Mockito.mock(com.moviereview.exception.GlobalExceptionHandler.class);
+    @Test
+    void testCreateUserWithDuplicateUsername() {
+        // Given
+        when(userRepository.existsByUsername("existing")).thenReturn(true);
 
-        com.moviereview.userlogin.model.User user = new com.moviereview.userlogin.model.User();
-        user.setEmail("dup@example.com");
-        user.setPassword("pwd");
-
-        com.moviereview.userlogin.service.UserService service =
-            new com.moviereview.userlogin.service.UserService(userRepository, globalException);
-
-        org.junit.jupiter.api.Assertions.assertThrows(
-            com.moviereview.exception.DuplicateEmailException.class,
-            () -> service.createUser(user)
-        );
-
-        org.mockito.Mockito.verify(userRepository, org.mockito.Mockito.never())
-            .save(org.mockito.ArgumentMatchers.any(com.moviereview.userlogin.model.User.class));
+        // When & Then
+        assertThrows(DuplicateResourceException.class, () -> {
+            userService.createUser("existing", "password123", "test@example.com");
+        });
     }
 
-    @org.junit.jupiter.api.Test
-    public void createUser_savesAndReturns_whenGlobalExceptionNull() {
-        com.moviereview.userlogin.repository.UserRepository userRepository =
-            org.mockito.Mockito.mock(com.moviereview.userlogin.repository.UserRepository.class);
-        com.moviereview.exception.GlobalExceptionHandler globalException = null;
+    @Test
+    void testValidatePassword() {
+        // Given
+        User user = new User();
+        user.setUsername("testuser");
+        String rawPassword = "password123";
+        user.setPassword(passwordEncoder.encode(rawPassword));
 
-        com.moviereview.userlogin.model.User user = new com.moviereview.userlogin.model.User();
-        user.setEmail("new@example.com");
-        user.setPassword("pwd");
+        // When
+        boolean result = userService.validatePassword(user, rawPassword);
 
-        org.mockito.Mockito.when(userRepository.save(org.mockito.ArgumentMatchers.any(com.moviereview.userlogin.model.User.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
-
-        com.moviereview.userlogin.service.UserService service =
-            new com.moviereview.userlogin.service.UserService(userRepository, globalException);
-
-        com.moviereview.userlogin.model.User result = service.createUser(user);
-
-        org.junit.jupiter.api.Assertions.assertNotNull(result);
-        org.junit.jupiter.api.Assertions.assertEquals("new@example.com", result.getEmail());
-        org.mockito.Mockito.verify(userRepository, org.mockito.Mockito.times(1)).save(user);
+        // Then
+        assertTrue(result);
     }
 
-    @org.junit.jupiter.api.Test
-    public void loginUser_returnsSuccess_onMatchingCredentials() {
-        com.moviereview.userlogin.repository.UserRepository userRepository =
-            org.mockito.Mockito.mock(com.moviereview.userlogin.repository.UserRepository.class);
-        com.moviereview.exception.GlobalExceptionHandler globalException = null;
+    @Test
+    void testFindByUsername() {
+        // Given
+        User user = new User();
+        user.setUsername("testuser");
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
 
-        com.moviereview.userlogin.model.User user = new com.moviereview.userlogin.model.User();
-        user.setEmail("login@example.com");
-        user.setPassword("secret");
+        // When
+        Optional<User> result = userService.findByUsername("testuser");
 
-        org.mockito.Mockito.when(userRepository.findAll())
-            .thenReturn(java.util.Collections.singletonList(user));
-
-        com.moviereview.userlogin.service.UserService service =
-            new com.moviereview.userlogin.service.UserService(userRepository, globalException);
-
-        String result = service.loginUser("login@example.com", "secret");
-
-        org.junit.jupiter.api.Assertions.assertEquals("Login successful", result);
-    }
-
-    @org.junit.jupiter.api.Test
-    public void loginUser_throwsEmailOrPasswordException_onNoMatch() {
-        com.moviereview.userlogin.repository.UserRepository userRepository =
-            org.mockito.Mockito.mock(com.moviereview.userlogin.repository.UserRepository.class);
-        com.moviereview.exception.GlobalExceptionHandler globalException = null;
-
-        com.moviereview.userlogin.model.User user = new com.moviereview.userlogin.model.User();
-        user.setEmail("other@example.com");
-        user.setPassword("nop");
-
-        org.mockito.Mockito.when(userRepository.findAll())
-            .thenReturn(java.util.Collections.singletonList(user));
-
-        com.moviereview.userlogin.service.UserService service =
-            new com.moviereview.userlogin.service.UserService(userRepository, globalException);
-
-        org.junit.jupiter.api.Assertions.assertThrows(
-            com.moviereview.exception.EmailOrPasswordException.class,
-            () -> service.loginUser("doesnot@example.com", "wrong")
-        );
+        // Then
+        assertTrue(result.isPresent());
+        assertEquals("testuser", result.get().getUsername());
     }
 }
