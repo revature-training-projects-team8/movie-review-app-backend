@@ -26,4 +26,7 @@ public class UserRegistrationRequest {
     @Email(message = "Email must be valid")
     private String email;
 
+    // Optional role field for admin registration
+    private String role;
+
 }
