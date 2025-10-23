@@ -91,7 +91,8 @@ public class AuthController {
             User newUser = userService.createUser(
                     request.getUsername(),
                     request.getPassword(),
-                    request.getEmail());
+                    request.getEmail(),
+                    request.getRole());
 
             // Generate JWT token for the new user
             String token = jwtUtil.generateToken(newUser.getUsername(), newUser.getRole());
@@ -114,44 +115,4 @@ public class AuthController {
         }
     }
 
-    /**
-     * TEST ENDPOINT - Generate BCrypt hash for a password
-     * GET /auth/test/hash?password=yourpassword
-     * This will help you generate the correct hash for your database
-     */
-    @GetMapping("/test/hash")
-    public ResponseEntity<String> generateHash(@RequestParam String password) {
-        String hash = userService.generateHash(password);
-        log.info("🔐 Generated BCrypt hash for testing");
-        return ResponseEntity.ok("BCrypt hash: " + hash);
-    }
-
-    /**
-     * TEST ENDPOINT - Test if a password matches the admin's stored hash
-     * GET /auth/test/verify?password=admin123
-     */
-    @GetMapping("/test/verify")
-    public ResponseEntity<String> testAdminPassword(@RequestParam String password) {
-        Optional<User> adminUser = userService.findByUsername("admin");
-
-        if (adminUser.isEmpty()) {
-            return ResponseEntity.ok("❌ Admin user not found in database");
-        }
-
-        User user = adminUser.get();
-        boolean matches = userService.validatePassword(user, password);
-
-        String result = String.format(
-                "Testing password: '%s'\n" +
-                        "Stored hash: %s\n" +
-                        "Password matches: %s\n\n" +
-                        "%s",
-                password,
-                user.getPassword(),
-                matches ? "✅ YES" : "❌ NO",
-                matches ? "Login should work!" : "This is why login fails - hash mismatch!");
-
-        log.info("🧪 Password verification test: {}", matches);
-        return ResponseEntity.ok(result);
-    }
 }

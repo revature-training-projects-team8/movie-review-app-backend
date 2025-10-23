@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -50,15 +51,29 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no authentication required
                         .requestMatchers(
-                                "/api/auth/**", // Auth endpoints (with /api prefix)
-                                "/auth/**", // Auth endpoints (without /api prefix)
-                                "/api/users/login", // User login endpoint
-                                "/api/users/register", // User registration endpoint
-                                "/api/movies/**", // Movie listing (public viewing)
-                                "/api/reviews/**", // Review endpoints
+                                "/auth/**", // Auth endpoints
                                 "/error", // Error page
                                 "/actuator/health" // Health check endpoint
                         ).permitAll()
+                        
+                        // Public read-only movie endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                        
+                        // Admin-only movie management operations
+                        .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
+                        
+                        // Public read-only review endpoints (movie reviews only)
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/movie/**").permitAll()
+                        
+                        // Protected personal review endpoints - require authentication
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/my-reviews").authenticated()
+                        
+                        // Protected review write operations - require authentication
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").authenticated()
 
                         // All other requests require authentication
                         .anyRequest().authenticated())

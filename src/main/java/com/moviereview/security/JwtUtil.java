@@ -15,15 +15,35 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * JWT Utility class for token generation, validation, and extraction
+ * JWT Utility class for token generation, validation, and extraction.
+ * 
+ * This class handles all JWT-related operations for the movie review application:
+ * - Token generation with user claims (username and role)
+ * - Token validation and expiration checking
+ * - Claims extraction (username, role, expiration)
+ * 
+ * Security Features:
+ * - Uses HS512 algorithm with HMAC SHA-512
+ * - 256-bit secret key for strong security
+ * - 24-hour token expiration by default
+ * - Role-based claims for authorization
  */
 @Component
 public class JwtUtil {
 
+    /**
+     * Secret key for signing JWT tokens. Should be at least 256 bits for HS256.
+     * Can be overridden in application.properties with jwt.secret property.
+     */
     @Value("${jwt.secret:mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLongForHS256Algorithm}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
+    /**
+     * Token expiration time in milliseconds.
+     * Default is 86400000ms = 24 hours.
+     * Can be overridden in application.properties with jwt.expiration property.
+     */
+    @Value("${jwt.expiration:86400000}")
     private Long expiration;
 
     /**
