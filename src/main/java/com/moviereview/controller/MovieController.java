@@ -70,14 +70,31 @@ public class MovieController {
         return ResponseEntity.ok(convertToDtoWithAverageRating(updatedMovie));
     }
 
-    // Delete a movie
+    /**
+     * Delete a movie by ID (ADMIN only).
+     * This will also delete all associated reviews due to cascade configuration.
+     * 
+     * @param id The ID of the movie to delete
+     * @return 204 No Content if successful
+     * @throws ResourceNotFoundException if movie doesn't exist
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
-        // Check if movie exists before deleting
-        movieService.getMovieById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
-        movieService.deleteMovie(id);
-        return ResponseEntity.noContent().build();
+        try {
+            // Check if movie exists before deleting
+            movieService.getMovieById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
+            
+            // Delete the movie (and cascade delete all reviews)
+            movieService.deleteMovie(id);
+            
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error deleting movie with id " + id + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Re-throw to let global exception handler deal with it
+        }
     }
 
     // Helper to convert Movie entity to DTO and include average rating

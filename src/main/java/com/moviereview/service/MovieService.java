@@ -1,10 +1,12 @@
 package com.moviereview.service;
 
+import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.Movie;
 import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,8 +46,26 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    // Delete a movie
+        /**
+     * Deletes a movie by its ID.
+     * 
+     * The @Transactional annotation ensures that the deletion happens in a single transaction.
+     * We explicitly delete associated reviews first to handle foreign key constraints.
+     * 
+     * @param id The ID of the movie to delete
+     * @throws ResourceNotFoundException if movie with given ID is not found
+     */
+    @Transactional
     public void deleteMovie(Long id) {
+        // First, verify the movie exists
+        Movie movie = movieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
+        
+        // Explicitly delete all reviews for this movie first
+        // This handles the foreign key constraint at the database level
+        reviewRepository.deleteByMovieId(id);
+        
+        // Now delete the movie
         movieRepository.deleteById(id);
     }
 }
