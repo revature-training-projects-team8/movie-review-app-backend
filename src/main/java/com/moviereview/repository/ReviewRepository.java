@@ -71,4 +71,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      */
     @Query("SELECT r FROM Review r JOIN FETCH r.movie JOIN FETCH r.user ORDER BY r.reviewDate DESC")
     List<Review> findTopRecentReviews(Pageable pageable);
+
+    /**
+     * Finds all reviews with eager loading of movie and user data.
+     * Uses JOIN FETCH to load associated movie and user data in a single query,
+     * preventing N+1 query problems and LazyInitializationException.
+     * 
+     * @return List of all reviews with movie and user data eagerly loaded
+     */
+    @Query("SELECT r FROM Review r JOIN FETCH r.movie JOIN FETCH r.user ORDER BY r.reviewDate DESC")
+    List<Review> findAllReviewsWithMovieAndUser();
 }

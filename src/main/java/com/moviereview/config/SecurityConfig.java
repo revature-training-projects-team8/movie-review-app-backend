@@ -64,9 +64,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
                         
-                        // Public read-only review endpoints (movie reviews and recent reviews)
+                        // Public read-only review endpoints (movie reviews, recent reviews, and all reviews)
                         .requestMatchers(HttpMethod.GET, "/api/reviews/movie/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews/recent").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/all").permitAll()
                         
                         // Protected personal review endpoints - require authentication
                         .requestMatchers(HttpMethod.GET, "/api/reviews/my-reviews").authenticated()
