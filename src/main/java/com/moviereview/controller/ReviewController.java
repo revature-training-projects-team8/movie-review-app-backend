@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * 
  * Endpoints:
  * - GET /api/reviews/movie/{movieId} - Public: Get all reviews for a movie
+ * - GET /api/reviews/recent?limit=10 - Public: Get most recent reviews (default: 10, max: 50)
  * - GET /api/reviews/my-reviews - Authenticated: Get current user's reviews
  * - POST /api/reviews/movie/{movieId} - Authenticated: Submit a new review
  * - PUT /api/reviews/{reviewId} - Authenticated: Update own review
@@ -75,6 +76,24 @@ public class ReviewController {
         
         User user = userOptional.get();
         return reviewService.getReviewsByUser(user.getId()).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves the most recent reviews in the system.
+     * Public endpoint - no authentication required.
+     * Returns up to 10 of the newest reviews by default.
+     * 
+     * @param limit Optional parameter to specify number of reviews (default: 10, max: 50)
+     * @return List of ReviewDTO objects for the most recent reviews
+     */
+    @GetMapping("/recent")
+    public List<ReviewDTO> getRecentReviews(@RequestParam(defaultValue = "10") int limit) {
+        // Limit the maximum number of reviews to prevent performance issues
+        int safeLimit = Math.min(limit, 50);
+        
+        return reviewService.getRecentReviews(safeLimit).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
