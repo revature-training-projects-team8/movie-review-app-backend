@@ -10,6 +10,7 @@ import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import com.moviereview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,14 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    
+    // Using setter injection to avoid circular dependency
+    private MovieService movieService;
+    
+    @Autowired
+    public void setMovieService(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     /**
      * Retrieves all reviews for a specific movie.
@@ -92,7 +101,13 @@ public class ReviewService {
         review.setUser(user);
         review.setRating(rating);
         review.setComment(comment);
-        return reviewRepository.save(review);
+        
+        Review savedReview = reviewRepository.save(review);
+        
+        // Update movie's average rating
+        movieService.updateMovieAverageRating(movieId);
+        
+        return savedReview;
     }
 
     /**
@@ -117,7 +132,13 @@ public class ReviewService {
 
         existingReview.setRating(rating);
         existingReview.setComment(comment);
-        return reviewRepository.save(existingReview);
+        
+        Review updatedReview = reviewRepository.save(existingReview);
+        
+        // Update movie's average rating
+        movieService.updateMovieAverageRating(existingReview.getMovie().getId());
+        
+        return updatedReview;
     }
 
     /**
@@ -138,7 +159,11 @@ public class ReviewService {
             throw new ValidationException("User not authorized to delete this review.");
         }
 
+        Long movieId = existingReview.getMovie().getId();
         reviewRepository.delete(existingReview);
+        
+        // Update movie's average rating after deletion
+        movieService.updateMovieAverageRating(movieId);
     }
 
     /**
@@ -160,7 +185,11 @@ public class ReviewService {
             throw new ValidationException("User not authorized to delete this review.");
         }
 
+        Long movieId = existingReview.getMovie().getId();
         reviewRepository.delete(existingReview);
+        
+        // Update movie's average rating after deletion
+        movieService.updateMovieAverageRating(movieId);
     }
 
     /**
@@ -174,5 +203,15 @@ public class ReviewService {
         return reviewRepository.findTopRecentReviews(
             org.springframework.data.domain.PageRequest.of(0, limit)
         );
+    }
+
+    /**
+     * Retrieves all reviews in the system.
+     * Uses JOIN FETCH to eagerly load movie and user data in a single query.
+     * 
+     * @return List of all reviews with movie and user data eagerly loaded
+     */
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAllReviewsWithMovieAndUser();
     }
 }
