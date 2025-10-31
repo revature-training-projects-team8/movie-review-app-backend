@@ -3,7 +3,9 @@ package com.moviereview.repository;
 import com.moviereview.model.Movie;
 import com.moviereview.model.Review;
 import com.moviereview.model.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
@@ -49,4 +51,24 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      * @return Optional containing the review if exists, empty otherwise
      */
     Optional<Review> findByMovieAndUser(Movie movie, User user);
+
+    /**
+     * Deletes all reviews for a specific movie by movie ID.
+     * Used when deleting a movie to handle foreign key constraints.
+     * 
+     * @param movieId The ID of the movie whose reviews should be deleted
+     */
+    @Modifying
+    @Query("DELETE FROM Review r WHERE r.movie.id = :movieId")
+    void deleteByMovieId(@Param("movieId") Long movieId);
+
+    /**
+     * Finds the most recent reviews ordered by creation date.
+     * Uses JOIN FETCH to load associated movie and user data in a single query.
+     * 
+     * @param pageable Pageable object to limit the number of results
+     * @return List of the most recent reviews with movie and user data eagerly loaded
+     */
+    @Query("SELECT r FROM Review r JOIN FETCH r.movie JOIN FETCH r.user ORDER BY r.reviewDate DESC")
+    List<Review> findTopRecentReviews(Pageable pageable);
 }

@@ -35,25 +35,26 @@
 
  :: Spring Boot ::                (v3.5.6)
 
-2025-10-23T00:59:45.696-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] c.m.MovieReviewBackendApplication        : Starting MovieReviewBackendApplication using Java 17.0.15 with PID 33552 (/Users/napo/Desktop/finalproject/movie-review-app-backend/target/classes started by napo in /Users/napo/Desktop/finalproject/movie-review-app-backend)
-2025-10-23T00:59:45.699-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] c.m.MovieReviewBackendApplication        : No active profile set, falling back to 1 default profile: "default"
-2025-10-23T00:59:45.735-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2025-10-23T00:59:45.735-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2025-10-23T00:59:46.612-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-23T00:59:46.671-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 50 ms. Found 3 JPA repository interfaces.
-2025-10-23T00:59:47.180-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2025-10-23T00:59:47.192-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2025-10-23T00:59:47.192-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
-2025-10-23T00:59:47.226-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2025-10-23T00:59:47.227-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1490 ms
-2025-10-23T00:59:47.403-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-23T00:59:47.447-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
-2025-10-23T00:59:47.474-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2025-10-23T00:59:47.687-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-23T00:59:47.710-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2025-10-23T00:59:47.860-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30788529
-2025-10-23T00:59:47.862-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2025-10-23T00:59:47.930-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2025-10-31T01:59:46.247-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] c.m.MovieReviewBackendApplication        : Starting MovieReviewBackendApplication using Java 17.0.15 with PID 25636 (/Users/napo/Desktop/finalproject/movie-review-app-backend/target/classes started by napo in /Users/napo/Desktop/finalproject/movie-review-app-backend)
+2025-10-31T01:59:46.251-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] c.m.MovieReviewBackendApplication        : No active profile set, falling back to 1 default profile: "default"
+2025-10-31T01:59:46.297-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-10-31T01:59:46.298-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-10-31T01:59:47.370-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-31T01:59:47.434-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 54 ms. Found 3 JPA repository interfaces.
+✓ Environment variables loaded from .env file
+2025-10-31T01:59:48.112-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-31T01:59:48.130-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-31T01:59:48.130-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-31T01:59:48.178-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-31T01:59:48.180-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1880 ms
+2025-10-31T01:59:48.397-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-31T01:59:48.450-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-31T01:59:48.483-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-31T01:59:48.777-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-31T01:59:48.808-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-31T01:59:48.982-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25fbb3b
+2025-10-31T01:59:48.984-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-31T01:59:49.065-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 8.0.34
@@ -61,22 +62,23 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2025-10-23T00:59:48.850-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-31T01:59:50.061-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
 Hibernate: 
     alter table movies 
        modify column avg_rating DECIMAL(3,2) DEFAULT 0.0
-2025-10-23T00:59:48.919-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-23T00:59:49.296-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
-2025-10-23T00:59:49.331-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-23T00:59:50.519-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2025-10-23T00:59:50.988-04:00  WARN 33552 --- [Movie Review App] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2025-10-23T00:59:50.993-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-23T00:59:50.996-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2025-10-23T00:59:51.013-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
-2025-10-23T00:59:51.041-04:00  INFO 33552 --- [Movie Review App] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+2025-10-31T01:59:50.144-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+✓ Database configuration loaded successfully
+2025-10-31T01:59:50.520-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-31T01:59:50.550-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-31T01:59:52.194-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2025-10-31T01:59:52.670-04:00  WARN 25636 --- [Movie Review App] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-10-31T01:59:52.675-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-31T01:59:52.678-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-10-31T01:59:52.685-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-10-31T01:59:52.709-04:00  INFO 25636 --- [Movie Review App] [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
 
 Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-10-23T00:59:51.062-04:00 ERROR 33552 --- [Movie Review App] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+2025-10-31T01:59:52.734-04:00 ERROR 25636 --- [Movie Review App] [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
 
 ***************************
 APPLICATION FAILED TO START
@@ -93,6 +95,6 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  7.479 s
-[INFO] Finished at: 2025-10-23T00:59:51-04:00
+[INFO] Total time:  8.944 s
+[INFO] Finished at: 2025-10-31T01:59:52-04:00
 [INFO] ------------------------------------------------------------------------

@@ -162,4 +162,17 @@ public class ReviewService {
 
         reviewRepository.delete(existingReview);
     }
+
+    /**
+     * Retrieves the most recent reviews in the system.
+     * Returns up to the specified limit of reviews ordered by creation date (newest first).
+     * 
+     * @param limit The maximum number of reviews to return (default: 10)
+     * @return List of the most recent reviews
+     */
+    public List<Review> getRecentReviews(int limit) {
+        return reviewRepository.findTopRecentReviews(
+            org.springframework.data.domain.PageRequest.of(0, limit)
+        );
+    }
 }
