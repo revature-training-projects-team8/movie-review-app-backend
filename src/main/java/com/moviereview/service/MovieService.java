@@ -4,16 +4,20 @@ import com.moviereview.model.Movie;
 import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class MovieService {
 
-    private final MovieRepository movieRepository;
-    private final ReviewRepository reviewRepository; // To calculate average rating
+    @Autowired
+    private MovieRepository movieRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository; // To calculate average rating
 
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
@@ -46,6 +50,12 @@ public class MovieService {
 
     // Delete a movie
     public void deleteMovie(Long id) {
-        movieRepository.deleteById(id);
+        List<Movie> movies = movieRepository.findAll();
+        for(Movie m : movies){
+            if(m.getId().equals(id)){
+                reviewRepository.deleteAll(reviewRepository.findByMovie(m));
+            }
+       }
+       movieRepository.deleteById(id);
     }
 }

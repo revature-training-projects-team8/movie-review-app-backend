@@ -5,6 +5,8 @@ import com.moviereview.exception.ResourceNotFoundException;
 import com.moviereview.model.Movie;
 import com.moviereview.service.MovieService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieService movieService;
+    @Autowired
+    private MovieService movieService;
 
     // Browse all movies
     @GetMapping
@@ -73,11 +76,8 @@ public class MovieController {
     // Delete a movie
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
-        // Check if movie exists before deleting
-        movieService.getMovieById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
         movieService.deleteMovie(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // Helper to convert Movie entity to DTO and include average rating
