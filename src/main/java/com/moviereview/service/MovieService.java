@@ -80,8 +80,9 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId)
             .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + movieId));
         
-        // Get all reviews for this movie
-        List<com.moviereview.model.Review> reviews = reviewRepository.findByMovie(movie);
+        // Use a more efficient query to get ratings directly by movie ID
+        // This avoids potential lazy loading issues with the movie entity
+        List<com.moviereview.model.Review> reviews = reviewRepository.findByMovieIdOrderByReviewDateDesc(movieId);
         
         if (reviews.isEmpty()) {
             // No reviews, set rating to 0

@@ -135,10 +135,28 @@ public class ReviewService {
         
         Review updatedReview = reviewRepository.save(existingReview);
         
-        // Update movie's average rating
-        movieService.updateMovieAverageRating(existingReview.getMovie().getId());
+        // Update movie's average rating - get movie ID without accessing lazy-loaded Movie object
+        try {
+            if (movieService != null) {
+                Long movieId = reviewRepository.getMovieIdByReviewId(reviewId);
+                if (movieId != null) {
+                    movieService.updateMovieAverageRating(movieId);
+                } else {
+                    System.err.println("Warning: Could not find movie ID for review " + reviewId);
+                }
+            } else {
+                System.err.println("Warning: MovieService is not properly injected");
+            }
+        } catch (Exception e) {
+            // Log the error but don't fail the review update
+            System.err.println("Error updating movie average rating: " + e.getMessage());
+            e.printStackTrace();
+            // Don't throw exception - review update succeeded, rating update failed
+        }
         
-        return updatedReview;
+        // Return review with eagerly loaded movie and user data to prevent LazyInitializationException in controller
+        return reviewRepository.findByIdWithMovieAndUser(reviewId)
+                .orElse(updatedReview); // Fallback to regular review if eager loading fails
     }
 
     /**
