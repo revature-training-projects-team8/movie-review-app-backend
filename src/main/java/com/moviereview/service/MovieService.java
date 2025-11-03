@@ -58,7 +58,7 @@ public class MovieService {
     @Transactional
     public void deleteMovie(Long id) {
         // First, verify the movie exists
-        Movie movie = movieRepository.findById(id)
+        movieRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
         
         // Explicitly delete all reviews for this movie first
@@ -67,5 +67,50 @@ public class MovieService {
         
         // Now delete the movie
         movieRepository.deleteById(id);
+    }
+
+    /**
+     * Updates the average rating for a movie based on all its reviews.
+     * Calculates the average from all reviews and updates the movie entity.
+     * 
+     * @param movieId The ID of the movie to update the rating for
+     */
+    @Transactional
+    public void updateMovieAverageRating(Long movieId) {
+        Movie movie = movieRepository.findById(movieId)
+            .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + movieId));
+        
+        // Get all reviews for this movie
+        List<com.moviereview.model.Review> reviews = reviewRepository.findByMovie(movie);
+        
+        if (reviews.isEmpty()) {
+            // No reviews, set rating to 0
+            movie.setAvgRating(0.0);
+        } else {
+            // Calculate average rating
+            double averageRating = reviews.stream()
+                .mapToInt(com.moviereview.model.Review::getRating)
+                .average()
+                .orElse(0.0);
+            
+            // Round to 2 decimal places
+            movie.setAvgRating(Math.round(averageRating * 100.0) / 100.0);
+        }
+        
+        movieRepository.save(movie);
+    }
+
+    /**
+     * Recalculates and updates average ratings for all movies in the database.
+     * Useful for data migration or fixing rating inconsistencies.
+     * This method should be used carefully as it processes all movies.
+     */
+    @Transactional
+    public void recalculateAllMovieRatings() {
+        List<Movie> allMovies = movieRepository.findAll();
+        
+        for (Movie movie : allMovies) {
+            updateMovieAverageRating(movie.getId());
+        }
     }
 }

@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
  * Endpoints:
  * - GET /api/reviews/movie/{movieId} - Public: Get all reviews for a movie
  * - GET /api/reviews/recent?limit=10 - Public: Get most recent reviews (default: 10, max: 50)
+ * - GET /api/reviews/all - Public: Get all reviews in the system (newest first)
  * - GET /api/reviews/my-reviews - Authenticated: Get current user's reviews
  * - POST /api/reviews/movie/{movieId} - Authenticated: Submit a new review
  * - PUT /api/reviews/{reviewId} - Authenticated: Update own review
@@ -35,7 +36,6 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:3001" }, allowCredentials = "true")
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -94,6 +94,20 @@ public class ReviewController {
         int safeLimit = Math.min(limit, 50);
         
         return reviewService.getRecentReviews(safeLimit).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves all reviews in the system.
+     * Public endpoint - no authentication required.
+     * Returns all reviews ordered by creation date (newest first).
+     * 
+     * @return List of all ReviewDTO objects in the system
+     */
+    @GetMapping("/all")
+    public List<ReviewDTO> getAllReviews() {
+        return reviewService.getAllReviews().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
