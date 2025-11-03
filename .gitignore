@@ -37,3 +37,9 @@ build/
 .env.local
 .env.production
 .env.staging
+
+### Log Files ###
+*.log
+logs/
+app.log
+nohup.out
