@@ -81,4 +81,34 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
      */
     @Query("SELECT r FROM Review r JOIN FETCH r.movie JOIN FETCH r.user ORDER BY r.reviewDate DESC")
     List<Review> findAllReviewsWithMovieAndUser();
+
+    /**
+     * Finds all reviews for a specific movie by movie ID.
+     * Used for calculating average ratings - doesn't need JOIN FETCH since we only need ratings.
+     * 
+     * @param movieId The ID of the movie
+     * @return List of reviews for the movie ordered by review date (newest first)
+     */
+    @Query("SELECT r FROM Review r WHERE r.movie.id = :movieId ORDER BY r.reviewDate DESC")
+    List<Review> findByMovieIdOrderByReviewDateDesc(@Param("movieId") Long movieId);
+
+    /**
+     * Gets the movie ID for a specific review without loading the Movie entity.
+     * This prevents LazyInitializationException when accessing movie data outside transaction scope.
+     * 
+     * @param reviewId The ID of the review
+     * @return The movie ID associated with the review, or null if review not found
+     */
+    @Query("SELECT r.movie.id FROM Review r WHERE r.id = :reviewId")
+    Long getMovieIdByReviewId(@Param("reviewId") Long reviewId);
+
+    /**
+     * Finds a review by ID with eager loading of movie and user data.
+     * This prevents LazyInitializationException when accessing related entities outside transaction scope.
+     * 
+     * @param reviewId The ID of the review to find
+     * @return Optional of review with movie and user data eagerly loaded
+     */
+    @Query("SELECT r FROM Review r JOIN FETCH r.movie JOIN FETCH r.user WHERE r.id = :reviewId")
+    Optional<Review> findByIdWithMovieAndUser(@Param("reviewId") Long reviewId);
 }
