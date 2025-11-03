@@ -58,7 +58,7 @@ public class MovieService {
     @Transactional
     public void deleteMovie(Long id) {
         // First, verify the movie exists
-        Movie movie = movieRepository.findById(id)
+        movieRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + id));
         
         // Explicitly delete all reviews for this movie first

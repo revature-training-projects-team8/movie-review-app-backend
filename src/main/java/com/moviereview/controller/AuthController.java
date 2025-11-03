@@ -24,7 +24,6 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"}, allowCredentials = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
