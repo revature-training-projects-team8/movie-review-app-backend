@@ -45,9 +45,9 @@ app.log
 nohup.out
 
 ### Properties Files ###
-*.properties
-*.properties.*
+# *.properties
+# *.properties.*
 
 # Ignore Spring Boot config files
-src/main/resources/application*.properties
+src/main/resources/application.properties
 
