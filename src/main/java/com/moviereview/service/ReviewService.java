@@ -135,7 +135,6 @@ public class ReviewService {
         
         Review updatedReview = reviewRepository.save(existingReview);
         
-<<<<<<< HEAD
         // Update movie's average rating - get movie ID without accessing lazy-loaded Movie object
         try {
             if (movieService != null) {
@@ -158,12 +157,6 @@ public class ReviewService {
         // Return review with eagerly loaded movie and user data to prevent LazyInitializationException in controller
         return reviewRepository.findByIdWithMovieAndUser(reviewId)
                 .orElse(updatedReview); // Fallback to regular review if eager loading fails
-=======
-        // Update movie's average rating
-        movieService.updateMovieAverageRating(existingReview.getMovie().getId());
-        
-        return updatedReview;
->>>>>>> origin/develop
     }
 
     /**
