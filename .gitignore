@@ -31,3 +31,23 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+.env.staging
+
+### Log Files ###
+*.log
+logs/
+app.log
+nohup.out
+
+### Properties Files ###
+# *.properties
+# *.properties.*
+
+# Ignore Spring Boot config files
+src/main/resources/application.properties
+

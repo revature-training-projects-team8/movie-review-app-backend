@@ -10,6 +10,7 @@ import com.moviereview.repository.MovieRepository;
 import com.moviereview.repository.ReviewRepository;
 import com.moviereview.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,14 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    
+    // Using setter injection to avoid circular dependency
+    private MovieService movieService;
+    
+    @Autowired
+    public void setMovieService(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     /**
      * Retrieves all reviews for a specific movie.
@@ -92,7 +101,13 @@ public class ReviewService {
         review.setUser(user);
         review.setRating(rating);
         review.setComment(comment);
-        return reviewRepository.save(review);
+        
+        Review savedReview = reviewRepository.save(review);
+        
+        // Update movie's average rating
+        movieService.updateMovieAverageRating(movieId);
+        
+        return savedReview;
     }
 
     /**
@@ -117,7 +132,31 @@ public class ReviewService {
 
         existingReview.setRating(rating);
         existingReview.setComment(comment);
-        return reviewRepository.save(existingReview);
+        
+        Review updatedReview = reviewRepository.save(existingReview);
+        
+        // Update movie's average rating - get movie ID without accessing lazy-loaded Movie object
+        try {
+            if (movieService != null) {
+                Long movieId = reviewRepository.getMovieIdByReviewId(reviewId);
+                if (movieId != null) {
+                    movieService.updateMovieAverageRating(movieId);
+                } else {
+                    System.err.println("Warning: Could not find movie ID for review " + reviewId);
+                }
+            } else {
+                System.err.println("Warning: MovieService is not properly injected");
+            }
+        } catch (Exception e) {
+            // Log the error but don't fail the review update
+            System.err.println("Error updating movie average rating: " + e.getMessage());
+            e.printStackTrace();
+            // Don't throw exception - review update succeeded, rating update failed
+        }
+        
+        // Return review with eagerly loaded movie and user data to prevent LazyInitializationException in controller
+        return reviewRepository.findByIdWithMovieAndUser(reviewId)
+                .orElse(updatedReview); // Fallback to regular review if eager loading fails
     }
 
     /**
@@ -138,7 +177,11 @@ public class ReviewService {
             throw new ValidationException("User not authorized to delete this review.");
         }
 
+        Long movieId = existingReview.getMovie().getId();
         reviewRepository.delete(existingReview);
+        
+        // Update movie's average rating after deletion
+        movieService.updateMovieAverageRating(movieId);
     }
 
     /**
@@ -160,6 +203,33 @@ public class ReviewService {
             throw new ValidationException("User not authorized to delete this review.");
         }
 
+        Long movieId = existingReview.getMovie().getId();
         reviewRepository.delete(existingReview);
+        
+        // Update movie's average rating after deletion
+        movieService.updateMovieAverageRating(movieId);
+    }
+
+    /**
+     * Retrieves the most recent reviews in the system.
+     * Returns up to the specified limit of reviews ordered by creation date (newest first).
+     * 
+     * @param limit The maximum number of reviews to return (default: 10)
+     * @return List of the most recent reviews
+     */
+    public List<Review> getRecentReviews(int limit) {
+        return reviewRepository.findTopRecentReviews(
+            org.springframework.data.domain.PageRequest.of(0, limit)
+        );
+    }
+
+    /**
+     * Retrieves all reviews in the system.
+     * Uses JOIN FETCH to eagerly load movie and user data in a single query.
+     * 
+     * @return List of all reviews with movie and user data eagerly loaded
+     */
+    public List<Review> getAllReviews() {
+        return reviewRepository.findAllReviewsWithMovieAndUser();
     }
 }

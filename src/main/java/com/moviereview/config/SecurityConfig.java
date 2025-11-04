@@ -64,8 +64,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
                         
-                        // Public read-only review endpoints (movie reviews only)
+                        // Public read-only review endpoints (movie reviews, recent reviews, and all reviews)
                         .requestMatchers(HttpMethod.GET, "/api/reviews/movie/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/recent").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/all").permitAll()
                         
                         // Protected personal review endpoints - require authentication
                         .requestMatchers(HttpMethod.GET, "/api/reviews/my-reviews").authenticated()
@@ -101,8 +103,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow requests from React frontend (both port 3000 and 3001)
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+        // Allow requests from common frontend ports (React, Vue, Angular, Vite)
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:3000",    // React default
+                "http://localhost:3001",    // React alternative
+                "http://localhost:5173",    // Vite default
+                "http://localhost:5174",    // Vite alternative
+                "http://localhost:4200",    // Angular default
+                "http://localhost:8081",    // Vue default
+                "http://127.0.0.1:*",       // Any localhost IP
+                "http://localhost:*"        // Any localhost port
+        ));
 
         // Allow all standard HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
