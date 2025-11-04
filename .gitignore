@@ -49,5 +49,5 @@ nohup.out
 # *.properties.*
 
 # Ignore Spring Boot config files
-src/main/ressources/application.properties
+src/main/resources/application.properties
 
