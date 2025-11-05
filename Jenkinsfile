@@ -25,7 +25,7 @@ pipeline {
         stage('Build Spring Backend') {
             steps {
                 dir('movie-review-app-backend') {
-                    sh './mvnw clean package -DskipTests'
+                    sh 'mvn clean package -DskipTests'
                 }
             }
         }
