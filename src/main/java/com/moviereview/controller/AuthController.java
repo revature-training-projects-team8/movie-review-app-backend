@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 /**
- * Authentication Controller with JWT
+ * Authentication Controller with JWT ##
  * Handles authentication endpoints at /auth/**
  * Provides login and registration functionality with JWT token generation
  */
