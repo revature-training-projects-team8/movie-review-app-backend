@@ -1,14 +1,14 @@
-# Use OpenJDK 17 as base image
-FROM openjdk:17-slim
+# Option A – Eclipse Temurin (well supported)
+FROM eclipse-temurin:17-jdk-jammy
 
 # Set working directory
 WORKDIR /app
 
-# Copy the built JAR from target directory
-COPY movie-review-app-backend/target/*.jar app.jar
+# Copy jar file built by Maven
+COPY target/*.jar app.jar
 
-# Expose port 8088 (instead of default 8080)
+# Expose the port your app runs on
 EXPOSE 8088
 
-# Run the application
+# Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]

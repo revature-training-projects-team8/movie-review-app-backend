@@ -112,7 +112,9 @@ public class SecurityConfig {
                 "http://localhost:4200",    // Angular default
                 "http://localhost:8081",    // Vue default
                 "http://127.0.0.1:*",       // Any localhost IP
-                "http://localhost:*"        // Any localhost port
+                "http://localhost:*",        // Any localhost port
+                "http://trng2309-8.s3-website-us-east-1.amazonaws.com/*"
+
         ));
 
         // Allow all standard HTTP methods

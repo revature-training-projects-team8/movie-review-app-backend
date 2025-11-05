@@ -21,12 +21,10 @@ pipeline {
                 sh 'aws s3 cp s3://kyles-secret-bucket/team8/application.properties movie-review-app-backend/src/main/resources/'
             }
         }
-        
+
         stage('Build Spring Backend') {
             steps {
-                dir('movie-review-app-backend') {
-                    sh 'mvn clean package -DskipTests'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
         
