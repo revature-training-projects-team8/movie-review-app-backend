@@ -22,6 +22,12 @@ pipeline {
             }
         }
         
+        stage('Debug Workspace') {
+            steps {
+                sh 'pwd'
+                sh 'ls -la'
+            }
+        }
         stage('Build Spring Backend') {
             steps {
                 dir('movie-review-app-backend') {
