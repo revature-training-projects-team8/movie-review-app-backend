@@ -103,18 +103,24 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow requests from common frontend ports (React, Vue, Angular, Vite)
-        configuration.setAllowedOriginPatterns(Arrays.asList(
+        // Allow specific origins (exact matches)
+        configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",    // React default
                 "http://localhost:3001",    // React alternative
                 "http://localhost:5173",    // Vite default
                 "http://localhost:5174",    // Vite alternative
                 "http://localhost:4200",    // Angular default
                 "http://localhost:8081",    // Vue default
+                "http://trng2309-8.s3-website-us-east-1.amazonaws.com",  // S3 frontend
+                "https://trng2309-8.s3-website-us-east-1.amazonaws.com"  // S3 frontend HTTPS
+        ));
+
+        // Allow pattern-based origins for localhost flexibility
+        configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://127.0.0.1:*",       // Any localhost IP
                 "http://localhost:*",        // Any localhost port
-                "http://trng2309-8.s3-website-us-east-1.amazonaws.com/*"
-
+                "http://*.s3-website-us-east-1.amazonaws.com",           // S3 pattern
+                "https://*.s3-website-us-east-1.amazonaws.com"           // S3 HTTPS pattern
         ));
 
         // Allow all standard HTTP methods
