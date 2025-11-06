@@ -105,12 +105,8 @@ public class SecurityConfig {
 
         // Allow specific origins (exact matches)
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",    // React default
-                "http://localhost:3001",    // React alternative
                 "http://localhost:5173",    // Vite default
                 "http://localhost:5174",    // Vite alternative
-                "http://localhost:4200",    // Angular default
-                "http://localhost:8081",    // Vue default
                 "http://trng2309-8.s3-website-us-east-1.amazonaws.com",  // S3 frontend
                 "https://trng2309-8.s3-website-us-east-1.amazonaws.com"  // S3 frontend HTTPS
         ));
